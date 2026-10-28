@@ -1617,6 +1617,7 @@ function sep(){rN++;var q=rN*7919+13,P=[],i,m;function R(){q=(q*1664525+10139042
  for(i=0;i<=10;i++)P.push([i*10,3+(R()-.5)*3.6]);
  var d="M"+f(P[0]);for(i=1;i<10;i++){m=[(P[i][0]+P[i+1][0])/2,(P[i][1]+P[i+1][1])/2];d+="Q"+f(P[i])+" "+f(m)}d+="L"+f(P[10]);
  return '<svg class="xs-sep" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+'"/></svg>'}
+function rowIf(c){return c?row.apply(null,[].slice.call(arguments,1)):""}
 function row(n,l,d,v,cls){return '<div class="xs-r'+(cls?" "+cls:"")+'">'+sep()+ic(n)+'<div class="xs-l"><b>'+esc(l)+'</b>'+(d?'<i>'+esc(d)+'</i>':'')+'</div><span class="xs-v">'+esc(v)+'</span></div>'}
 function panel(th,n,order,t,tot,info,rows,lock){return '<div class="xs-p xs-'+th+(lock?" xs-lk":"")+'" data-sd="'+(9500+order*17)+'" style="order:'+order+'"><div class="xs-h"><span class="xs-hi">'+IX(n)+'</span><span class="xs-hn">'+esc(t)+'</span>'+(tot?'<span class="xs-t">'+esc(tot)+'</span>':'')+'</div>'+(info?'<p class="xs-i">'+esc(info)+'</p>':'')+rows+'</div>'}
 function build(){
@@ -1624,45 +1625,45 @@ function build(){
  var base=V("boost"),dl=1+S.dewLv,wg=wgMul(),wm=wMul(),dq=dqMul(),per=gPw(base*dl*wg*wm*dq);
  c1+=panel("g","blade",1,Q("Grass","Трава"),"+"+nm(per),Q("Each cut blade gives this much grass: base × all multipliers below.","Каждая срезанная травинка даёт столько травы: база × все множители ниже."),
   row("boost",Q("Grass base","База травы"),Q("upgrade level "+S.up.boost,"улучшение, ур. "+S.up.boost),nm(base))+
-  row("dew",Q("Dew level","Уровень росы"),Q("dew lv "+S.dewLv+" → 1 + level","роса ур. "+S.dewLv+" → 1 + уровень"),X(dl),S.dewLv>0?"on":"")+
-  row("wg",Q("Water grass","Водная трава"),Q("upgrade level "+S.wg+" · x2 per level","улучшение, ур. "+S.wg+" · x2 за уровень"),X(wg),S.wg>0?"on":"")+
-  row("drop",Q("Water boost","Буст воды"),Q("2^log₁₀(water), current water "+fmt(S.water),"2^log₁₀(вода), сейчас воды "+fmt(S.water)),X(wm),wm>1?"on":"")+
-  row("dq",Q("Dew harvest","Урожай росы"),Q("every 5 dew levels (level "+S.dq+")","за каждые 5 ур. росы (ур. "+S.dq+")"),X(dq),dq>1?"on":"")+
+  rowIf(S.dewOn||S.dewLv>0,"dew",Q("Dew level","Уровень росы"),Q("dew lv "+S.dewLv+" → 1 + level","роса ур. "+S.dewLv+" → 1 + уровень"),X(dl),S.dewLv>0?"on":"")+
+  rowIf(S.wu||S.wg>0,"wg",Q("Water grass","Водная трава"),Q("upgrade level "+S.wg+" · x2 per level","улучшение, ур. "+S.wg+" · x2 за уровень"),X(wg),S.wg>0?"on":"")+
+  rowIf(S.rained||S.water>0,"drop",Q("Water boost","Буст воды"),Q("2^log₁₀(water), current water "+fmt(S.water),"2^log₁₀(вода), сейчас воды "+fmt(S.water)),X(wm),wm>1?"on":"")+
+  rowIf(S.w2d||S.dq>0,"dq",Q("Dew harvest","Урожай росы"),Q("every 5 dew levels (level "+S.dq+")","за каждые 5 ур. росы (ур. "+S.dq+")"),X(dq),dq>1?"on":"")+
   (tn>=1?row("clover",Q("Air clover","Воздушный клевер"),Q("chance of a clover worth x10 grass","шанс клевера с x10 травы"),S.ac+"%",S.ac>0?"on":""):"")+
-  row("rain",Q("Rain cloud","Дождливая туча"),Q("doubles growth speed while it is over the field","удваивает скорость роста, пока над полем"),rcOn()?"x2":"x1",rcOn()?"on":"")+
-  row("c1",Q("Cloud boost","Буст облаков"),Q("same boost as for rain · needs ocean milestone 5","тот же буст, что и у дождя · нужна веха океана 5"),S.oc>=MS[4]?X(cMul()):"x1",S.oc>=MS[4]?"on":"")+
-  row("ocean",Q("Ocean milestone 5","Веха океана 5"),Q("grass gain ^1.25 (after all multipliers, incl. clouds)","прирост травы ^1,25 (после всех множителей, включая облака)"),S.oc>=MS[4]?"^1.25":"^1",S.oc>=MS[4]?"on":""));
+  rowIf(S.rc>0,"rain",Q("Rain cloud","Дождливая туча"),Q("doubles growth speed while it is over the field","удваивает скорость роста, пока над полем"),rcOn()?"x2":"x1",rcOn()?"on":"")+
+  rowIf(S.oc>=MS[4],"c1",Q("Cloud boost","Буст облаков"),Q("same boost as for rain · needs ocean milestone 5","тот же буст, что и у дождя · нужна веха океана 5"),S.oc>=MS[4]?X(cMul()):"x1",S.oc>=MS[4]?"on":"")+
+  rowIf(S.oc>=MS[4],"ocean",Q("Ocean milestone 5","Веха океана 5"),Q("grass gain ^1.25 (after all multipliers, incl. clouds)","прирост травы ^1,25 (после всех множителей, включая облака)"),S.oc>=MS[4]?"^1.25":"^1",S.oc>=MS[4]?"on":""));
  var wr=rainGain(),L=g>=1000?Math.log10(g/1000):0,t1=g>=1000?1+Math.log(g/1000)/Math.log(3):1,t2=Math.pow(1.5,L),t3=Math.pow(2.5,L/3),cm=cMul(),tw=tnWM(),ow=ocWM();
  c2+=panel("w","drop",2,Q("Water","Вода"),g>=1000?"+"+w2(wr):Q("need "+fmt(1000)+" grass","нужно "+fmt(1000)+" травы"),Q("Water you get from the next rain. All factors are multiplied: with "+fmt(g)+" grass.","Вода за следующий дождь. Все множители перемножаются: при "+fmt(g)+" травы."),
   row("blade",Q("Grass: 1 + log₃","Трава: 1 + log₃"),"1 + log₃(grass / 1000)",nm(t1))+
   row("blade",Q("Grass: 1.5^log₁₀","Трава: 1.5^log₁₀"),"1.5^log₁₀(grass / 1000)",X(t2))+
   row("blade",Q("Grass: 2.5^log₁₀₀₀","Трава: 2.5^log₁₀₀₀"),"2.5^log₁₀₀₀(grass / 1000)",X(t3))+
-  row("c2",Q("Clouds","Облака"),Q("boost of small, medium and large clouds","буст малых, средних и больших облаков"),X(cm),cm>1?"on":"")+
-  row("tornado",Q("Tornado","Торнадо"),Q("x10 per tornado from the 3rd ("+tn+" created)","x10 за торнадо с 3-го (создано "+tn+")"),X(tw),tw>1?"on":"")+
-  row("ocean",Q("Ocean volume","Объём океана"),Q((S.oc>=MS[5]?"2":"1.5")+"^log₂(m³)"+(S.oc>=MS[2]?" · x100 milestone":"")+(S.oc>=MS[6]?" · x2.50K milestone":""),(S.oc>=MS[5]?"2":"1,5")+"^log₂(м³)"+(S.oc>=MS[2]?" · веха x100":"")+(S.oc>=MS[6]?" · веха x2,50K":"")),X(ow),ow>1?"on":"")+
+  rowIf(have,"c2",Q("Clouds","Облака"),Q("boost of small, medium and large clouds","буст малых, средних и больших облаков"),X(cm),cm>1?"on":"")+
+  rowIf(S.tl||tn>0,"tornado",Q("Tornado","Торнадо"),Q("x10 per tornado from the 3rd ("+tn+" created)","x10 за торнадо с 3-го (создано "+tn+")"),X(tw),tw>1?"on":"")+
+  rowIf(tn>=3||S.oc>0,"ocean",Q("Ocean volume","Объём океана"),Q((S.oc>=MS[5]?"2":"1.5")+"^log₂(m³)"+(S.oc>=MS[2]?" · x100 milestone":"")+(S.oc>=MS[6]?" · x2.50K milestone":""),(S.oc>=MS[5]?"2":"1,5")+"^log₂(м³)"+(S.oc>=MS[2]?" · веха x100":"")+(S.oc>=MS[6]?" · веха x2,50K":"")),X(ow),ow>1?"on":"")+
   (S.fl>0?row("drop",Q("World Flood","Всемирный потоп"),Q("x2 per level, lv "+S.fl,"x2 за уровень, ур. "+S.fl),X(flMul()),"on"):""));
  var db=V("dewb"),dg=dgMul(),rc=rcOn()?2:1,dp=db*dg*rc;
  c1+=panel("d","dew",3,Q("Dew","Роса"),"+"+nm(dp),Q("Dew progress per cut blade. Dew level "+S.dewLv+", next level needs "+fmt(dewReq(S.dewLv))+".","Прогресс росы за срезанную травинку. Ур. росы "+S.dewLv+", до следующего: "+fmt(dewReq(S.dewLv))+"."),
   row("dewb",Q("Dew base","База росы"),Q("upgrade level "+S.up.dewb,"улучшение, ур. "+S.up.dewb),nm(db))+
   row("dg",Q("More dew","Больше росы"),Q("upgrade level "+S.dg+" · x1.5 per level","улучшение, ур. "+S.dg+" · x1,5 за уровень"),X(dg),S.dg>0?"on":"")+
-  row("rain",Q("Rain cloud","Дождливая туча"),Q("doubles dew while it is over the field","удваивает росу, пока над полем"),"x"+rc,rc>1?"on":"")+
+  rowIf(S.rc>0,"rain",Q("Rain cloud","Дождливая туча"),Q("doubles dew while it is over the field","удваивает росу, пока над полем"),"x"+rc,rc>1?"on":"")+
   row("blade",Q("Grass from dew","Трава от росы"),Q("each dew level adds +1 to the grass multiplier","каждый уровень росы даёт +1 к множителю травы"),X(dl),S.dewLv>0?"on":""),!S.dewOn);
  var sm=stMin(),ts=tnSM(),m15=tMul(),have=S.steam>0||S.c1+S.c2+S.c3>0||tn>0;
  c3+=panel("s","steam",4,Q("Steam","Пар"),X(ts),Q("Steam is made from water you spend.","Пар делается из тратимой воды."),
   row("steam",Q("Steam per water","Пар за воду"),Q("random in this range per spent water","случайно в этом диапазоне за тратимую воду"),sm+"–100")+
-  row("tornado",Q("Tornado","Торнадо"),Q("x30 per tornado from the 2nd ("+tn+" created)","x30 за торнадо со 2-го (создано "+tn+")"),X(ts),ts>1?"on":"")+
+  rowIf(S.tl||tn>0,"tornado",Q("Tornado","Торнадо"),Q("x30 per tornado from the 2nd ("+tn+" created)","x30 за торнадо со 2-го (создано "+tn+")"),X(ts),ts>1?"on":"")+
   (S.oc>=MS[1]?row("steam",Q("Passive steam","Пассивный пар"),Q("per second from current water, water is not spent","в секунду от текущей воды, вода не тратится"),stPct()+"%","on"):""),!have);
  var c4="";
  c4+=panel("cl","cloud",5,Q("Clouds","Облака"),X(cm),Q("Clouds boost the water you get from rain.","Облака усиливают воду, которую даёт дождь."),
   row("c1",Q("Small clouds","Малые облака"),Q(fmt(S.c1)+" pcs · +0.25 each","шт.: "+fmt(S.c1)+" · +0,25 каждое"),"+"+nm(0.25*m15*S.c1),S.c1>0?"on":"")+
   row("c2",Q("Medium clouds","Средние облака"),Q(fmt(S.c2)+" pcs · +5 each","шт.: "+fmt(S.c2)+" · +5 каждое"),"+"+nm(5*m15*S.c2),S.c2>0?"on":"")+
   row("c3",Q("Large clouds","Большие облака"),Q(fmt(S.c3)+" pcs · +100 each","шт.: "+fmt(S.c3)+" · +100 каждое"),"+"+nm(100*m15*S.c3),S.c3>0?"on":"")+
-  row("tornado",Q("Tornado on clouds","Торнадо на облака"),Q("+50% to all cloud boosts after the 1st tornado","+50% ко всем бустам облаков после 1-го торнадо"),X(m15),m15>1?"on":"")+
+  rowIf(tn>0,"tornado",Q("Tornado on clouds","Торнадо на облака"),Q("+50% to all cloud boosts after the 1st tornado","+50% ко всем бустам облаков после 1-го торнадо"),X(m15),m15>1?"on":"")+
   row("cloud",Q("Total clouds boost to water","Итого буст воды от облаков"),"1 + S + M + L",X(cm),cm>1?"on":""),!have);
  var P=tsPow(S.tsd),ob=Math.pow(2,P),o10=(S.oc>=MS[1]&&rcOn())?10:1,sl=Math.exp(-ocK()*S.oc),rate=ocBoost(P)*sl,mu=Q("m³/s","м³/с");
  c2+=panel("o","ocean",6,Q("Ocean volume","Объём океана"),ocRU(rate),Q("How fast the ocean fills. Volume now: "+ocVU(S.oc)+".","Как быстро заполняется океан. Сейчас: "+ocVU(S.oc)+"."),
   row("tsu",Q("Tsunami power","Сила цунами"),Q("2^power, power "+nm(P),"2^сила, сила "+nm(P)),X(ob),ob>1?"on":"")+
-  row("rain",Q("Rain cloud over ocean","Туча над океаном"),Q("x10 while the rain cloud is over the field (milestone 2)","x10, пока туча над полем (веха 2)"),X(o10),o10>1?"on":"")+
+  rowIf(S.oc>=MS[1]&&S.rc>0,"rain",Q("Rain cloud over ocean","Туча над океаном"),Q("x10 while the rain cloud is over the field (milestone 2)","x10, пока туча над полем (веха 2)"),X(o10),o10>1?"on":"")+
   row("ou1",Q("Slowdown by volume","Замедление от объёма"),Q("x"+ocBase()+" per "+ocX()+" m³","x"+String(ocBase()).replace(".",",")+" за "+ocX()+" м³"),"÷"+nm(sl>0?1/sl:Math.exp(ocK()*S.oc)),sl<1?"on":"")+
   row("ocean",Q("Fill speed","Скорость заполнения"),Q("boost × slowdown","буст × замедление"),ocRU(rate),"on")+
   row("drop",Q("Boost to water","Буст к воде"),Q((S.oc>=MS[5]?"2":"1.5")+"^log₂(m³)"+(S.oc>=MS[2]?" · x100 milestone":"")+(S.oc>=MS[6]?" · x2.50K milestone":""),(S.oc>=MS[5]?"2":"1,5")+"^log₂(м³)"+(S.oc>=MS[2]?" · веха x100":"")+(S.oc>=MS[6]?" · веха x2,50K":"")),X(ow),ow>1?"on":""),!(tn>=3||S.oc>0));
