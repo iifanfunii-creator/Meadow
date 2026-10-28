@@ -1674,7 +1674,7 @@ function build(){
   rowIf(S.oc>=MS[1]&&S.rc>0,"rain",Q("Rain cloud over ocean","Туча над океаном"),Q("x10 while the rain cloud is over the field (milestone 2)","x10, пока туча над полем (веха 2)"),X(o10),o10>1?"on":"")+
   row("ou1",Q("Slowdown by volume","Замедление от объёма"),Q("x"+ocBase()+" per "+ocX()+" m³","x"+String(ocBase()).replace(".",",")+" за "+ocX()+" м³"),"÷"+nm(sl>0?1/sl:Math.exp(ocK()*S.oc)),sl<1?"on":"")+
   row("ocean",Q("Fill speed","Скорость заполнения"),Q("boost × slowdown","буст × замедление"),ocRU(rate),"on")+
-  row("drop",Q("Boost to water","Буст к воде"),Q((S.oc>=MS[5]?"2":"1.5")+"^log₂(m³)"+(S.oc>=MS[2]?" · x100 milestone":"")+(S.oc>=MS[6]?" · x2.50K milestone":""),(S.oc>=MS[5]?"2":"1,5")+"^log₂(м³)"+(S.oc>=MS[2]?" · веха x100":"")+(S.oc>=MS[6]?" · веха x2,50K":"")),X(ow),ow>1?"on":""),!(tn>=3||S.oc>0));
+  row("drop",Q("Boost to water","Буст к воде"),Q((S.oc>=MS[5]?"2":"1.5")+"^log₂(m³)"+(S.oc>=MS[2]?" · x100 milestone":"")+(S.oc>=MS[6]?" · x2.50K milestone":""),(S.oc>=MS[5]?"2":"1,5")+"^log₂(м³)"+(S.oc>=MS[2]?" · веха x100":"")+(S.oc>=MS[6]?" · веха x2,50K":"")),X(ow),ow>1?"on":""),!(P>=1||S.oc>0));
  return '<div class="xs-c">'+c1+'</div><div class="xs-c">'+c2+'</div><div class="xs-c">'+c3+c4+'</div>'}
 var ro=null,raf=0,lastSg="",scrT=0;
 pgT.addEventListener("scroll",function(){scrT=performance.now()},{passive:true});
