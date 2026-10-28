@@ -390,6 +390,9 @@ body.sfs:not(.sbk) #sback{opacity:1;visibility:visible;pointer-events:auto;trans
 .sdbg{opacity:0;transition:opacity .4s ease}
 body.gr .sdbg{opacity:1}
 body.t .sdbg,body.s .sdbg{opacity:0}
+.sdbg{visibility:visible;transition:opacity .4s ease,visibility 0s 0s}
+body.s .sdbg,body.t .sdbg,body.w .sdbg,body.e .sdbg,body.gr.w .sdbg,body.gr.e .sdbg{opacity:0;visibility:hidden;transition:opacity .4s ease,visibility 0s .4s}
+@media not all{.sdbg{transition:none!important}}
 
 @media (min-width:1280px){
 body.tn3 #pgW::before{left:-300px;width:calc(50% + 140px);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 260px,#000 calc(100% - 140px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 260px,#000 calc(100% - 140px),transparent 100%);opacity:0;transition:opacity .55s ease}body.w.tn3 #pgW::before{opacity:1}
@@ -1007,10 +1010,14 @@ var svMsg=document.createElement("div");svMsg.className="sv";svMsg.style.cssText
 var svTa=document.createElement("textarea");svTa.className="sv";svTa.spellcheck=false;svTa.setAttribute("autocomplete","off");svTa.setAttribute("autocapitalize","off");
 svTa.style.cssText="display:none;box-sizing:border-box;width:100%;min-height:110px;resize:vertical;padding:10px 12px;font:12px/1.35 monospace;color:var(--ink);background:var(--gb);border:2px solid var(--gbs);border-radius:12px;-webkit-user-select:text;user-select:text;word-break:break-all";
 sset.appendChild(svTa);
-var svExB=null,svImB=null,svArm=0,svArmT=0;
+var svExB=null,svImB=null,svArm=0,svArmT=0,svFzd=0;
+(function(){var st=document.createElement("style");st.textContent="#sset>.svcb{break-before:column}";document.head.appendChild(st)})();
+function svFz(){if(svFzd||!sset.offsetWidth)return;var cs=getComputedStyle(sset);if(cs.columnWidth==="auto"&&cs.columnCount==="auto")return;
+ var left=null;[].forEach.call(sset.children,function(e){if(!e.getClientRects().length)return;var l=e.offsetLeft;if(left===null){left=l;return}if(l>left+20){left=l;e.classList.add("svcb")}});svFzd=1}
+window.addEventListener("resize",function(){if(!svFzd)return;[].forEach.call(sset.querySelectorAll(".svcb"),function(e){e.classList.remove("svcb")});svFzd=0;requestAnimationFrame(svFz)});
 function svRu(){return SET.lang==="ru"}
 function svT(en,ru){return svRu()?ru:en}
-function svShow(m){svMsg.textContent=m;svMsg.style.display=m?"block":"none"}
+function svShow(m){if(m)svFz();svMsg.textContent=m;svMsg.style.display=m?"block":"none"}
 function svEnc(){save();var j=JSON.stringify(S);return btoa(unescape(encodeURIComponent(j)))}
 function svDec(c){c=String(c||"").replace(/\s+/g,"");if(!c)throw 0;var o=JSON.parse(decodeURIComponent(escape(atob(c))));if(!o||typeof o!=="object"||typeof o.grass!=="number")throw 0;return o}
 function svUpd(){
@@ -1025,13 +1032,14 @@ function svMk(seed,act){var b=document.createElement("button");b.type="button";b
  b.innerHTML='<div class="h"><span class="n"></span></div><span class="e"></span>';b.onclick=act;svG.appendChild(b);
  function dr(){sk(b,seed,false,null)}if(window.ResizeObserver)new ResizeObserver(dr).observe(b);else dr();return b}
 svExB=svMk(4711,function(){
- var code;try{code=svEnc()}catch(e){svShow(svT("Export failed","Не удалось экспортировать"));return}
+ svFz();var code;try{code=svEnc()}catch(e){svShow(svT("Export failed","Не удалось экспортировать"));return}
  svTa.value=code;svTa.style.display="block";svArm=0;svUpd();
  var done=function(){svShow(svT("Code copied to clipboard","Код скопирован в буфер обмена"))};
  var fb=function(){try{svTa.focus();svTa.select();svTa.setSelectionRange(0,code.length);var ok=document.execCommand&&document.execCommand("copy");svShow(ok?svT("Code copied to clipboard","Код скопирован в буфер обмена"):svT("Select and copy the code below","Выделите и скопируйте код ниже"))}catch(e){svShow(svT("Select and copy the code below","Выделите и скопируйте код ниже"))}};
  try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(code).then(done,fb);else fb()}catch(e){fb()}
 });
 svImB=svMk(4712,function(){
+ svFz();
  if(svTa.style.display==="none"||!svTa.value.trim()){svTa.style.display="block";svTa.value="";svArm=0;svUpd();svShow(svT("Paste the code, then tap Import again","Вставьте код и нажмите «Импорт» ещё раз"));
   try{if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(x){if(x&&!svTa.value){try{svDec(x);svTa.value=x.trim();svShow(svT("Code pasted. Tap Import to continue","Код вставлен. Нажмите «Импорт»"))}catch(e){}}},function(){})}catch(e){}
   return}
